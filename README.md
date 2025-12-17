@@ -58,3 +58,19 @@ devops-ci-cd-project/
 ## 👨‍💻 Auteur
 
 Développé dans le cadre du TP DevOps CI/CD
+
+
+
+# Gabon 3D Interactive Map
+
+Une carte 3D interactive du Gabon avec parcours de biodiversité. Backend en Flask, frontend en Three.js.
+
+[![Build Status](https://github.com/tonusername/gabon-3d-interactive/actions/workflows/ci.yml/badge.svg)](https://github.com/tonusername/gabon-3d-interactive/actions)
+[![Docker Image](https://img.shields.io/docker/pulls/tondockerusername/gabon-3d.svg)](https://hub.docker.com/r/tondockerusername/gabon-3d)
+
+## Setup
+- `pip install -r requirements.txt`
+- `python app.py`
+
+## Déploiement
+Déployé automatiquement sur Render via GitHub Actions.

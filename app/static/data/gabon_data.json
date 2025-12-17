@@ -1,0 +1,131 @@
+{
+  "provinces": {
+    "Estuaire": {
+      "capitale": "Libreville (environ 850 000 hab.)",
+      "villes": ["Libreville (capitale nationale)", "Owendo (port industriel)", "Akanda", "Ntoum"],
+      "population": "Environ 900 000 (près de 40% de la population nationale)",
+      "economie": "Administration publique, pétrole, commerce, port international, industries",
+      "culture": "Peuples Fang, Myéné et Mpongwè ; festivals contemporains et traditionnels",
+      "monuments": ["Palais présidentiel", "Cathédrale Sainte-Marie", "Arboretum de Sibang", "Musée des Arts et Traditions"],
+      "parcs": ["Akanda (mangroves riches)", "Pongara (plages et forêts côtières)"],
+      "biodiversite": ["Tortues luth marines, mangroves protégées, oiseaux migrateurs, lamantins"]
+    },
+    "Haut-Ogooué": {
+      "capitale": "Franceville (environ 110 000 hab.)",
+      "villes": ["Franceville", "Moanda (centre minier)", "Mounana"],
+      "population": "Environ 250 000",
+      "economie": "Extraction de manganèse (Comilog, leader mondial), uranium, bois",
+      "culture": "Peuples Obamba et Kota ; rites Bwiti, masques traditionnels",
+      "monuments": ["Chutes de Poubara", "Lépidolite de Franceville", "Gare historique du Transgabonais"],
+      "parcs": ["Plateaux Batéké (savanes et éléphants)"],
+      "biodiversite": ["Éléphants de forêt, lions (rares), antilopes, oiseaux des savanes"]
+    },
+    "Moyen-Ogooué": {
+      "capitale": "Lambaréné (environ 40 000 hab.)",
+      "villes": ["Lambaréné", "Ndjolé"],
+      "population": "Environ 70 000",
+      "economie": "Bois, pêche fluviale, tourisme médical et historique",
+      "culture": "Peuples Tsogho et Galoa ; héritage Albert Schweitzer",
+      "monuments": ["Hôpital historique Albert Schweitzer (patrimoine UNESCO potentiel)"],
+      "parcs": ["Lopé (mosaïque savane-forêt, site UNESCO)"],
+      "biodiversite": ["Mandrills (plus grand troupeau mondial), gorilles, buffles, hippopotames"]
+    },
+    "Ngounié": {
+      "capitale": "Mouila",
+      "villes": ["Mouila", "Ndendé", "Fougamou"],
+      "population": "Environ 100 000",
+      "economie": "Agriculture, exploitation forestière, petite industrie",
+      "culture": "Peuples Punu, Tsogo et Massango ; célèbres masques Punu blancs",
+      "monuments": ["Grottes sacrées de Lebamba", "Massif du Chaillu"],
+      "parcs": ["Waka (forêts denses et montagnes)", "Birougou (refuge biologique)"],
+      "biodiversite": ["Gorilles des plaines occidentales, chimpanzés, panthères, éléphants"]
+    },
+    "Nyanga": {
+      "capitale": "Tchibanga",
+      "villes": ["Tchibanga", "Mayumba", "Moabi"],
+      "population": "Environ 55 000",
+      "economie": "Pêche, tourisme côtier, agriculture",
+      "culture": "Peuples Vili et Punu ; traditions maritimes",
+      "monuments": ["Lagune de Banio", "Plages de Mayumba"],
+      "parcs": ["Mayumba (parc marin et côtier, plages de ponte)"],
+      "biodiversite": ["Tortues luth (plus grande zone de ponte d'Afrique), baleines à bosse, dauphins"]
+    },
+    "Ogooué-Ivindo": {
+      "capitale": "Makokou",
+      "villes": ["Makokou", "Booué", "Mékambo"],
+      "population": "Environ 65 000",
+      "economie": "Exploitation forestière, tourisme écologique",
+      "culture": "Peuples Fang, Kota et Bakota ; sculptures Kota célèbres",
+      "monuments": ["Chutes Kongou, Mingouli et Djidji (plus grandes d'Afrique centrale)"],
+      "parcs": ["Ivindo (forêts vierges, site UNESCO)", "Minkébé (bloc forestier immense)"],
+      "biodiversite": ["Gorilles, chimpanzés, éléphants de forêt, poissons rares des cascades"]
+    },
+    "Ogooué-Lolo": {
+      "capitale": "Koulamoutou",
+      "villes": ["Koulamoutou", "Lastoursville"],
+      "population": "Environ 70 000",
+      "economie": "Bois, agriculture, mines potentielles",
+      "culture": "Peuples Mitsogo et Massango ; rites Bwiti intenses",
+      "monuments": ["Grottes sacrées de Bongolo", "Massif du Chaillu"],
+      "parcs": ["Birougou (montagnes et forêts refuges)", "Waka (partagé)"],
+      "biodiversite": ["Grands singes, panthères, buffles de forêt, oiseaux endémiques"]
+    },
+    "Ogooué-Maritime": {
+      "capitale": "Port-Gentil (environ 140 000 hab.)",
+      "villes": ["Port-Gentil (capitale économique)", "Gamba", "Omboué"],
+      "population": "Environ 160 000",
+      "economie": "Pétrole offshore (principal hub), pêche industrielle",
+      "culture": "Peuples Orungu, Mpongwè et Nkomi ; traditions maritimes",
+      "monuments": ["Phare du Cap Lopez", "Réserves pétrolières historiques"],
+      "parcs": ["Loango (côtes iconiques avec faune sauvage)"],
+      "biodiversite": ["Éléphants et hippopotames sur plages, gorilles côtiers, baleines"]
+    },
+    "Woleu-Ntem": {
+      "capitale": "Oyem",
+      "villes": ["Oyem", "Bitam", "Mitzic"],
+      "population": "Environ 155 000",
+      "economie": "Agriculture (cacao, café), bois, commerce frontalier",
+      "culture": "Peuples Fang (majoritaires) ; danses et rites initiatiques",
+      "monuments": ["Forêts du Minkébé", "Monts de Cristal"],
+      "parcs": ["Monts de Cristal (forêts nuageuses)", "Minkébé (partagé)"],
+      "biodiversite": ["Gorilles des plaines, éléphants, oiseaux rares, orchidées endémiques"]
+    }
+  },
+  "parks": {
+    "Loango": {
+      "description": "Parc côtier légendaire : plages infinies où éléphants, buffles et hippos se promènent librement, baleines offshore.",
+      "biodiversite": ["Éléphants de forêt sur plages, gorilles côtiers, hippopotames 'surfants', baleines à bosse, tortues marines"],
+      "effets": "Océan animé avec vagues, pluie tropicale, caméra fly-through sur plage"
+    },
+    "Ivindo": {
+      "description": "Forêts vierges intactes, chutes Kongou parmi les plus puissantes d'Afrique (site UNESCO).",
+      "biodiversite": ["Gorilles des plaines, chimpanzés, éléphants, poissons endémiques, brume des cascades"],
+      "effets": "Cascade animée avec particules d'eau, lumière filtrée à travers canopée"
+    },
+    "Lopé": {
+      "description": "Mosaïque unique savane-forêt (site UNESCO), vestiges archéologiques anciens.",
+      "biodiversite": ["Plus grand troupeau de mandrills au monde, gorilles, buffles, sitatungas"],
+      "effets": "Transition savane-forêt, troupeaux animés au coucher de soleil"
+    },
+    "Akanda": {
+      "description": "Mangroves et baies côtières près de Libreville, refuge pour oiseaux migrateurs.",
+      "biodiversite": ["Lamantins, tortues marines, milliers d'oiseaux (pélicans, flamants)"],
+      "effets": "Marées animées, vol d'oiseaux en formation"
+    },
+    "Mayumba": {
+      "description": "Parc marin-côtier : 60 km de plages vierges, plus grande zone de ponte de tortues luth d'Afrique.",
+      "biodiversite": ["Tortues luth (milliers de pontes), baleines à bosse, dauphins"],
+      "effets": "Nuit étoilée avec tortues émergeant de l'océan"
+    },
+    "Minkébé": {
+      "description": "Immense bloc forestier isolé, l'un des plus préservés d'Afrique centrale.",
+      "biodiversite": ["Éléphants de forêt (très haute densité), gorilles, panthères"],
+      "effets": "Forêt dense avec brume matinale, cris d'animaux lointains"
+    },
+    "MontsDeCristal": {
+      "description": "Forêts nuageuses montagneuses, plus haute biodiversité florale d'Afrique.",
+      "biodiversite": ["Orchidées endémiques, primates rares, oiseaux montagnards"],
+      "effets": "Nuages enveloppants, lumière dorée à l'aube"
+    }
+  }
+}
