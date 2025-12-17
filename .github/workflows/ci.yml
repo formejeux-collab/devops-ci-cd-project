@@ -1,0 +1,142 @@
+name: CI - Intégration Continue
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+env:
+  PYTHON_VERSION: '3.11'
+  FLASK_ENV: production
+
+jobs:
+  test:
+    name: Tests & Qualité
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configuration Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Installation des dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov flake8 black
+
+      - name: 🎨 Vérification formatage (Black)
+        run: |
+          black --check app/ tests/ || true
+
+      - name: 🔍 Linting (Flake8)
+        run: |
+          flake8 app/ tests/ --max-line-length=100 --ignore=E501,W503 || true
+
+      - name: 🧪 Tests unitaires
+        run: |
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=term
+
+      - name: 📊 Upload rapport de couverture
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  build:
+    name: Build Application
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configuration Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: 📦 Installation des dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🚀 Test de lancement Flask
+        run: |
+          python app/app.py &
+          sleep 5
+          curl -f http://localhost:5000/health || exit 1
+          pkill -f "python app/app.py"
+
+      - name: 📦 Création de l'artefact
+        run: |
+          mkdir -p build
+          cp -r app/ build/
+          cp requirements.txt build/
+          tar -czf codex-veritas-build.tar.gz build/
+
+      - name: 📤 Upload de l'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-veritas-build
+          path: codex-veritas-build.tar.gz
+          retention-days: 7
+
+  docker-build:
+    name: Build Image Docker
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🐳 Configuration Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔨 Build image Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: false
+          tags: codexveritas/flask-app:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 🧪 Test de l'image Docker
+        run: |
+          docker run -d -p 5000:5000 --name test-app codexveritas/flask-app:test
+          sleep 10
+          curl -f http://localhost:5000/health || exit 1
+          docker stop test-app
+          docker rm test-app
+
+  report:
+    name: 📊 Rapport CI
+    needs: [test, build, docker-build]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📋 Génération du rapport
+        run: |
+          echo "=========================================="
+          echo "🏛️ CODEX VERITAS - Rapport CI"
+          echo "=========================================="
+          echo "✅ Tests: ${{ needs.test.result }}"
+          echo "✅ Build: ${{ needs.build.result }}"
+          echo "✅ Docker: ${{ needs.docker-build.result }}"
+          echo "=========================================="
+          echo "🔗 Commit: ${{ github.sha }}"
+          echo "👤 Auteur: ${{ github.actor }}"
+          echo "🌿 Branche: ${{ github.ref_name }}"
+          echo "=========================================="
