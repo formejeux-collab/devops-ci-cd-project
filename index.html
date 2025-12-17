@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Codex Veritas - Déployé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 700px;
+        }
+        h1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .status {
+            color: #10B981;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #10B981;
+            color: white;
+            border-radius: 20px;
+            margin: 0.5rem;
+        }
+        code {
+            background: #1e293b;
+            color: #38bdf8;
+            padding: 0.8rem;
+            border-radius: 5px;
+            display: block;
+            margin: 1rem 0;
+            font-family: monospace;
+            text-align: left;
+        }
+        .section {
+            margin: 2rem 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ Codex Veritas</h1>
+        <div class="status">✅ Application Déployée avec Succès!</div>
+        
+        <div class="badge">CI/CD Actif</div>
+        <div class="badge">Docker Hub</div>
+        <div class="badge">GHCR</div>
+        
+        <div class="section">
+            <h3>🐳 Lancer avec Docker Hub:</h3>
+            <code>docker pull vickydvsh99/flask-app:latest<br>docker run -p 5000:5000 vickydvsh99/flask-app:latest</code>
+        </div>
+        
+        <div class="section">
+            <h3>📦 Ou avec GitHub Container Registry:</h3>
+            <code>docker pull ghcr.io/VOTRE-REPO:latest<br>docker run -p 5000:5000 ghcr.io/VOTRE-REPO:latest</code>
+        </div>
+        
+        <p style="margin-top: 2rem; color: #666;">
+            Dernière mise à jour: $(date -u +"%Y-%m-%d %H:%M UTC")
+        </p>
+    </div>
+</body>
+</html>
