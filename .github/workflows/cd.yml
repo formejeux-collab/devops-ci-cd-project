@@ -1,195 +1,106 @@
 name: CD - Déploiement Continu
 
 on:
-  release:
-    types: [published]
   push:
-    tags:
-      - 'v*.*.*'
-  workflow_dispatch:
+    branches: [ main ]               # Auto sur merge main
+  workflow_dispatch:                 # Manuel depuis GitHub
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: gabon-3d-interactive   # Change si tu veux un autre nom d'image
 
 jobs:
   build-and-push:
-    name: 🐳 Build & Push Docker
+    name: 🐳 Build & Push Image Docker
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
-    
+      packages: write                  # Pour GHCR
+
     steps:
-      - name: 📥 Checkout du code
+      - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: 🔧 Configuration Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🔑 Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: 🔑 Login GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🏷️ Extraction des métadonnées
+      - name: Préparation métadonnées Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.DOCKER_USERNAME }}/flask-app
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+            ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest
-            type=semver,pattern={{version}}
+            type=sha,prefix={{branch}}-
+            type=ref,event=branch
 
-      - name: 🚀 Build et Push Docker
+      - name: Configuration Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login Docker Hub (optionnel)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        continue-on-error: true   # ← Si secrets manquent → ignore l'erreur
+
+      - name: Login GitHub Container Registry (toujours actif)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push image Docker
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: 📋 Résumé du Build
+      - name: Résumé images publiées
         run: |
-          echo "✅ Images Docker construites et publiées avec succès!"
-          echo ""
-          echo "📦 Images disponibles:"
-          echo "  • Docker Hub: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest"
-          echo "  • GHCR: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo "✅ Build & Push terminé !"
+          if [ -n "${{ secrets.DOCKER_USERNAME }}" ]; then
+            echo "Docker Hub : ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+          else
+            echo "⚠️ Docker Hub ignoré (secrets manquants)"
+          fi
+          echo "GHCR : ghcr.io/${{ github.repository }}:latest"
 
-  deploy-pages:
-    name: 📄 Déploiement GitHub Pages
+  deploy-render:
+    name: 🚀 Déploiement sur Render (optionnel)
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-    
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
     steps:
-      - name: 📥 Checkout du code
-        uses: actions/checkout@v4
-
-      - name: 🔧 Création page de statut
+      - name: Déclenchement déploiement Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
         run: |
-          mkdir -p public
-          cat > public/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-              <title>Codex Veritas - Déployé</title>
-              <style>
-                  body {
-                      font-family: Arial, sans-serif;
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      height: 100vh;
-                      margin: 0;
-                  }
-                  .container {
-                      background: white;
-                      padding: 3rem;
-                      border-radius: 20px;
-                      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                      text-align: center;
-                      max-width: 700px;
-                  }
-                  h1 {
-                      background: linear-gradient(135deg, #667eea, #764ba2);
-                      -webkit-background-clip: text;
-                      -webkit-text-fill-color: transparent;
-                      font-size: 3rem;
-                      margin-bottom: 1rem;
-                  }
-                  .status {
-                      color: #10B981;
-                      font-size: 1.5rem;
-                      font-weight: bold;
-                      margin: 1rem 0;
-                  }
-                  .badge {
-                      display: inline-block;
-                      padding: 0.5rem 1rem;
-                      background: #10B981;
-                      color: white;
-                      border-radius: 20px;
-                      margin: 0.5rem;
-                  }
-                  code {
-                      background: #1e293b;
-                      color: #38bdf8;
-                      padding: 0.8rem;
-                      border-radius: 5px;
-                      display: block;
-                      margin: 1rem 0;
-                      font-family: monospace;
-                      text-align: left;
-                  }
-                  .section {
-                      margin: 2rem 0;
-                      text-align: left;
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="container">
-                  <h1>🏛️ Codex Veritas</h1>
-                  <div class="status">✅ Application Déployée avec Succès!</div>
-                  
-                  <div class="badge">CI/CD Actif</div>
-                  <div class="badge">Docker Hub</div>
-                  <div class="badge">GHCR</div>
-                  
-                  <div class="section">
-                      <h3>🐳 Lancer avec Docker Hub:</h3>
-                      <code>docker pull vickydvsh99/flask-app:latest<br>docker run -p 5000:5000 vickydvsh99/flask-app:latest</code>
-                  </div>
-                  
-                  <div class="section">
-                      <h3>📦 Ou avec GitHub Container Registry:</h3>
-                      <code>docker pull ghcr.io/VOTRE-REPO:latest<br>docker run -p 5000:5000 ghcr.io/VOTRE-REPO:latest</code>
-                  </div>
-                  
-                  <p style="margin-top: 2rem; color: #666;">
-                      Dernière mise à jour: $(date -u +"%Y-%m-%d %H:%M UTC")
-                  </p>
-              </div>
-          </body>
-          </html>
-          EOF
-
-      - name: 🚀 Déploiement GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
+            echo "⚠️ Secrets Render manquants → déploiement ignoré"
+            exit 0
+          fi
+          echo "Lancement déploiement Render..."
+          curl -X POST \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys
 
   notify:
-    name: 📢 Notifications
-    needs: [build-and-push, deploy-pages]
+    name: 📢 Notification finale
+    needs: [build-and-push, deploy-render]
     runs-on: ubuntu-latest
     if: always()
-    
     steps:
-      - name: 📋 Résumé
+      - name: Résumé CD
         run: |
           echo "=========================================="
-          echo "🏛️ CODEX VERITAS - CD Pipeline"
-          echo "=========================================="
-          echo "Build & Push: ${{ needs.build-and-push.result }}"
-          echo "GitHub Pages: ${{ needs.deploy-pages.result }}"
+          echo "CD - Carte 3D Gabon"
+          echo "Build & Push : ${{ needs.build-and-push.result }}"
+          echo "Déploiement Render : ${{ needs.deploy-render.result }}"
           echo "=========================================="
