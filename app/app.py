@@ -1,25 +1,69 @@
+"""
+Codex Veritas - Application Flask
+Application web vitrine avec CI/CD automatisé
+"""
+
 from flask import Flask, render_template, jsonify
-import json
+import os
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Charger data JSON (ajoute plus d'infos si besoin)
-with open('static/data/gabon_data.json', 'r') as f:
-    gabon_data = json.load(f)
+# Configuration
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'codex-veritas-dev-key')
+app.config['ENV'] = os.environ.get('FLASK_ENV', 'production')
 
+# Route principale
 @app.route('/')
 def index():
+    """Page d'accueil de Codex Veritas"""
     return render_template('index.html')
 
-@app.route('/api/province/<province>')
-def get_province_info(province):
-    return jsonify(gabon_data.get(province, {}))
+# API pour les informations de l'équipe
+@app.route('/api/team-info')
+def team_info():
+    """Endpoint API pour récupérer les infos de l'équipe"""
+    return jsonify({
+        'name': 'Codex Veritas',
+        'tagline': 'Du code fiable et maîtrisé',
+        'description': 'Équipe DevOps spécialisée en CI/CD et conteneurisation',
+        'technologies': ['Flask', 'Docker', 'GitHub Actions', 'Kubernetes'],
+        'deployment_status': 'automated',
+        'timestamp': datetime.now().isoformat()
+    })
 
-@app.route('/api/park/<park>')
-def get_park_info(park):
-    # Simule un parcours biodiversité avec data
-    park_data = gabon_data['parks'].get(park, {})
-    return jsonify(park_data)
+# API Health Check (pour monitoring)
+@app.route('/health')
+def health():
+    """Endpoint de santé pour le monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'codex-veritas-app',
+        'timestamp': datetime.now().isoformat()
+    }), 200
+
+# Gestion des erreurs 404
+@app.errorhandler(404)
+def page_not_found(e):
+    """Page 404 personnalisée"""
+    return render_template('index.html'), 404
+
+# Gestion des erreurs 500
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Page 500 personnalisée"""
+    return jsonify({
+        'error': 'Internal Server Error',
+        'message': 'Une erreur s\'est produite sur le serveur'
+    }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Configuration pour développement local
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    app.run(
+        host='0.0.0.0',
+        port=port,
+        debug=debug
+    )
