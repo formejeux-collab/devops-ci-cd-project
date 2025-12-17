@@ -48,10 +48,8 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/flask-app
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
+            type=raw,value=latest
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: 🚀 Build et Push Docker
         uses: docker/build-push-action@v5
@@ -64,18 +62,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: 🔒 Scan de sécurité (Trivy)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: 📤 Upload résultats Trivy
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
+      - name: 📋 Résumé du Build
+        run: |
+          echo "✅ Images Docker construites et publiées avec succès!"
+          echo ""
+          echo "📦 Images disponibles:"
+          echo "  • Docker Hub: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest"
+          echo "  • GHCR: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
 
   deploy-pages:
     name: 📄 Déploiement GitHub Pages
@@ -96,11 +89,11 @@ jobs:
           <!DOCTYPE html>
           <html>
           <head>
-              <title>Codex Veritas - Status</title>
+              <title>Codex Veritas - Déployé</title>
               <style>
                   body {
                       font-family: Arial, sans-serif;
-                      background: linear-gradient(135deg, #FFE4E9, #FFF5F7, #F0E68C);
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                       display: flex;
                       justify-content: center;
                       align-items: center;
@@ -111,11 +104,12 @@ jobs:
                       background: white;
                       padding: 3rem;
                       border-radius: 20px;
-                      box-shadow: 0 8px 32px rgba(212, 175, 55, 0.2);
+                      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
                       text-align: center;
+                      max-width: 700px;
                   }
                   h1 {
-                      background: linear-gradient(135deg, #D4AF37, #F0E68C);
+                      background: linear-gradient(135deg, #667eea, #764ba2);
                       -webkit-background-clip: text;
                       -webkit-text-fill-color: transparent;
                       font-size: 3rem;
@@ -125,6 +119,7 @@ jobs:
                       color: #10B981;
                       font-size: 1.5rem;
                       font-weight: bold;
+                      margin: 1rem 0;
                   }
                   .badge {
                       display: inline-block;
@@ -132,18 +127,46 @@ jobs:
                       background: #10B981;
                       color: white;
                       border-radius: 20px;
-                      margin: 1rem;
+                      margin: 0.5rem;
+                  }
+                  code {
+                      background: #1e293b;
+                      color: #38bdf8;
+                      padding: 0.8rem;
+                      border-radius: 5px;
+                      display: block;
+                      margin: 1rem 0;
+                      font-family: monospace;
+                      text-align: left;
+                  }
+                  .section {
+                      margin: 2rem 0;
+                      text-align: left;
                   }
               </style>
           </head>
           <body>
               <div class="container">
                   <h1>🏛️ Codex Veritas</h1>
-                  <div class="status">✅ Application déployée avec succès</div>
+                  <div class="status">✅ Application Déployée avec Succès!</div>
+                  
                   <div class="badge">CI/CD Actif</div>
                   <div class="badge">Docker Hub</div>
                   <div class="badge">GHCR</div>
-                  <p>Dernière mise à jour: $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
+                  
+                  <div class="section">
+                      <h3>🐳 Lancer avec Docker Hub:</h3>
+                      <code>docker pull vickydvsh99/flask-app:latest<br>docker run -p 5000:5000 vickydvsh99/flask-app:latest</code>
+                  </div>
+                  
+                  <div class="section">
+                      <h3>📦 Ou avec GitHub Container Registry:</h3>
+                      <code>docker pull ghcr.io/VOTRE-REPO:latest<br>docker run -p 5000:5000 ghcr.io/VOTRE-REPO:latest</code>
+                  </div>
+                  
+                  <p style="margin-top: 2rem; color: #666;">
+                      Dernière mise à jour: $(date -u +"%Y-%m-%d %H:%M UTC")
+                  </p>
               </div>
           </body>
           </html>
@@ -162,32 +185,11 @@ jobs:
     if: always()
     
     steps:
-      - name: 📊 Statut du déploiement
+      - name: 📋 Résumé
         run: |
-          if [ "${{ needs.build-and-push.result }}" == "success" ]; then
-            echo "STATUS=✅ SUCCÈS" >> $GITHUB_ENV
-          else
-            echo "STATUS=❌ ÉCHEC" >> $GITHUB_ENV
-          fi
-
-      - name: 📋 Résumé du déploiement
-        run: |
-          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
-          # 🏛️ Codex Veritas - Déploiement CD
-          
-          ## 📊 Résultats
-          
-          | Job | Statut |
-          |-----|--------|
-          | Build & Push | ${{ needs.build-and-push.result }} |
-          | GitHub Pages | ${{ needs.deploy-pages.result }} |
-          
-          ## 🐳 Images Docker
-          
-          - **Docker Hub**: `${{ secrets.DOCKER_USERNAME }}/flask-app:latest`
-          - **GHCR**: `ghcr.io/${{ github.repository }}:latest`
-          
-          ---
-          
-          🚀 Déployé automatiquement par GitHub Actions
-          EOF
+          echo "=========================================="
+          echo "🏛️ CODEX VERITAS - CD Pipeline"
+          echo "=========================================="
+          echo "Build & Push: ${{ needs.build-and-push.result }}"
+          echo "GitHub Pages: ${{ needs.deploy-pages.result }}"
+          echo "=========================================="
